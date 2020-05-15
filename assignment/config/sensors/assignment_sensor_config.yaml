@@ -12,33 +12,33 @@ sensors:
   Camera_bin_1:
     type: logical_camera
     pose:
-      xyz: [-0.3, -1.92, 1.6]
+      xyz: [-0.3, -1.92, 1.7]
       rpy: [0, 'pi/2', 0]
 
   Camera_bin_2:
     type: logical_camera
     pose:
-      xyz: [-0.3, -1.15, 1.6]
+      xyz: [-0.3, -1.15, 1.7]
       rpy: [0, 'pi/2', 0]
   Camera_bin_3:
     type: logical_camera
     pose:
-      xyz: [-0.3, -0.383, 1.6]
+      xyz: [-0.3, -0.383, 1.7]
       rpy: [0, 'pi/2', 0]
   Camera_bin_4:
     type: logical_camera
     pose:
-      xyz: [-0.3, 0.383, 1.6]
+      xyz: [-0.3, 0.383, 1.7]
       rpy: [0, 'pi/2', 0]
   Camera_bin_5:
     type: logical_camera
     pose:
-      xyz: [-0.3, 1.15, 1.6]
+      xyz: [-0.3, 1.15, 1.7]
       rpy: [0, 'pi/2', 0]
   Camera_bin_6:
     type: logical_camera
     pose:
-      xyz: [-0.3, 1.92, 1.6]
+      xyz: [-0.3, 1.92, 1.7]
       rpy: [0, 'pi/2', 0]
   Camera_robot_1:
     type: logical_camera

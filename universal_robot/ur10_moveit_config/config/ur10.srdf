@@ -114,7 +114,7 @@
         <joint name="wrist_1_joint" value="3.64" />
         <joint name="wrist_2_joint" value="-1.51" />
         <joint name="wrist_3_joint" value="0" />
-    <group_state>
+    </group_state>
     <group_state name="tray1PreDrop" group="manipulator">
         <joint name="linear_arm_actuator_joint" value="1.18" />
         <joint name="shoulder_pan_joint" value="1.38" />
