@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="binSelectie">
+
+	<executable package_path="ariac_flexbe_behaviors.binselectie_sm" class="binSelectieSM" />
+	<tagstring>ariac, example</tagstring>
+	<author>Bas</author>
+	<date>Fri May 15 2020</date>
+	<description>
+		bin selectie en camera selectie bij bin.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
