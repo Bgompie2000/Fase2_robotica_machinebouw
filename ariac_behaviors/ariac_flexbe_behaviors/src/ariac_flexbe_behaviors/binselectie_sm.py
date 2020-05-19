@@ -56,15 +56,15 @@ class binSelectieSM(Behavior):
 		_state_machine.userdata.camera_ref_frame = ''
 		_state_machine.userdata.camera_ref_frame1 = 'arm1_linear_arm_actuator'
 		_state_machine.userdata.camera_topic = ''
-		_state_machine.userdata.camera_frame1 = 'logical_camera_1_frame'
+		_state_machine.userdata.camera_frame1 = 'Camera_bin_1_frame'
 		_state_machine.userdata.camera_ref_frame2 = 'arm2_linear_arm_actuator'
-		_state_machine.userdata.camera_topic2 = '/ariac/logical_camera_2'
-		_state_machine.userdata.camera_topic3 = '/ariac/logical_camera_3'
-		_state_machine.userdata.camera_topic4 = '/ariac/logical_camera_4'
-		_state_machine.userdata.camera_topic1 = '/ariac/logical_camera_1'
-		_state_machine.userdata.camera_frame2 = 'logical_camera_2_frame'
-		_state_machine.userdata.camera_frame3 = 'logical_camera_3_frame'
-		_state_machine.userdata.camera_frame4 = 'logical_camera_4_frame'
+		_state_machine.userdata.camera_topic2 = '/ariac/Camera_bin_2'
+		_state_machine.userdata.camera_topic5 = '/ariac/Camera_bin_5'
+		_state_machine.userdata.camera_topic6 = '/ariac/Camera_bin_6'
+		_state_machine.userdata.camera_topic1 = '/ariac/Camera_bin_1'
+		_state_machine.userdata.camera_frame2 = 'Camera_bin_2_frame'
+		_state_machine.userdata.camera_frame5 = 'Camera_bin_5_frame'
+		_state_machine.userdata.camera_frame6 = 'Camera_bin_6_frame'
 		_state_machine.userdata.camera_frame = ''
 		_state_machine.userdata.part_offset = 0
 		_state_machine.userdata.offset1 = 0
@@ -155,14 +155,14 @@ class binSelectieSM(Behavior):
 										ReplaceState(),
 										transitions={'done': 'camerarefframe1_11'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'value': 'camera_topic3', 'result': 'camera_topic'})
+										remapping={'value': 'camera_topic5', 'result': 'camera_topic'})
 
 			# x:480 y:406
 			OperatableStateMachine.add('camerarefframe1_8',
 										ReplaceState(),
 										transitions={'done': 'camerarefframe1_12'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'value': 'camera_topic4', 'result': 'camera_topic'})
+										remapping={'value': 'camera_topic6', 'result': 'camera_topic'})
 
 			# x:666 y:60
 			OperatableStateMachine.add('camerarefframe1_9',
@@ -183,14 +183,14 @@ class binSelectieSM(Behavior):
 										ReplaceState(),
 										transitions={'done': 'offsetpullypart'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'value': 'camera_frame3', 'result': 'camera_frame'})
+										remapping={'value': 'camera_frame5', 'result': 'camera_frame'})
 
 			# x:671 y:398
 			OperatableStateMachine.add('camerarefframe1_12',
 										ReplaceState(),
 										transitions={'done': 'offsetGasketpart'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'value': 'camera_frame4', 'result': 'camera_frame'})
+										remapping={'value': 'camera_frame6', 'result': 'camera_frame'})
 
 			# x:852 y:58
 			OperatableStateMachine.add('offsetgearpart',

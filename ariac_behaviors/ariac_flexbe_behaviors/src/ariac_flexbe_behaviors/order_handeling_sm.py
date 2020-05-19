@@ -68,6 +68,7 @@ class order_handelingSM(Behavior):
 		_state_machine.userdata.camera_ref_frame = ''
 		_state_machine.userdata.camera_frame = ''
 		_state_machine.userdata.tool_link = 'ee_link'
+		_state_machine.userdata.camera_topic = ''
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -136,7 +137,7 @@ class order_handelingSM(Behavior):
 										self.use_behavior(transport_part_form_bin_to_agv_stateSM, 'transport_part_form_bin_to_agv_state'),
 										transitions={'finished': 'IncrementProductIndex', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'part_type': 'part_type', 'agv_id': 'agv_id', 'pose_on_agv': 'pose_on_agv', 'camera_ref_frame': 'camera_ref_frame', 'camera_frame': 'camera_frame'})
+										remapping={'part_type': 'part_type', 'agv_id': 'agv_id', 'pose_on_agv': 'pose_on_agv', 'camera_ref_frame': 'camera_ref_frame', 'camera_frame': 'camera_frame', 'camera_topic': 'camera_topic'})
 
 
 		return _state_machine

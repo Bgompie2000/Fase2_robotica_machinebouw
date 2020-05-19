@@ -54,7 +54,7 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 
 	def create(self):
 		# x:1770 y:298, x:81 y:372
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['part_type', 'agv_id', 'pose_on_agv', 'camera_ref_frame', 'camera_frame'], output_keys=['part_type', 'camera_ref_frame', 'camera_frame'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['part_type', 'agv_id', 'pose_on_agv', 'camera_ref_frame', 'camera_frame', 'camera_topic'], output_keys=['part_type', 'camera_ref_frame', 'camera_frame'])
 		_state_machine.userdata.part_type = ''
 		_state_machine.userdata.agv_id = ''
 		_state_machine.userdata.move_group_prefix1 = '/ariac/arm1'
@@ -69,20 +69,21 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 		_state_machine.userdata.config_name_bin1PreGrasp = 'bin1PreGrasp'
 		_state_machine.userdata.camera_ref_frame2 = 'arm2_linear_arm_actuator'
 		_state_machine.userdata.camera_ref_frame1 = 'arm1_linear_arm_actuator'
-		_state_machine.userdata.camera_frame2 = 'logical_camera_2_frame'
-		_state_machine.userdata.camera_frame3 = 'logical_camera_3_frame'
-		_state_machine.userdata.camera_frame4 = 'logical_camera_4_frame'
+		_state_machine.userdata.camera_frame2 = 'Camera_bin_2_frame'
+		_state_machine.userdata.camera_frame5 = 'Camera_bin_5_frame'
+		_state_machine.userdata.camera_frame6 = 'Camera_bin_6_frame'
 		_state_machine.userdata.config_name_bin2PreGrasp = 'bin2PreGrasp'
 		_state_machine.userdata.config_name_bin5PreGrasp = 'bin5PreGrasp'
 		_state_machine.userdata.camera_ref_frame = ''
 		_state_machine.userdata.camera_frame = ''
-		_state_machine.userdata.camera_frame1 = 'logical_camera_1_frame'
+		_state_machine.userdata.camera_frame1 = 'Camera_bin_1_frame'
 		_state_machine.userdata.config_name_bin6PreGrasp = 'bin6PreGrasp'
 		_state_machine.userdata.joint_names = ''
 		_state_machine.userdata.part_rotation = 0
 		_state_machine.userdata.arm_id = 'arm1'
 		_state_machine.userdata.gripper1 = 'arm1'
 		_state_machine.userdata.gripper2 = 'arm2'
+		_state_machine.userdata.camera_topic = ''
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -131,28 +132,28 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 										EqualState(),
 										transitions={'true': 'pregraspbin1', 'false': 'bin2'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame3'})
+										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame1'})
 
 			# x:475 y:527
 			OperatableStateMachine.add('bin2',
 										EqualState(),
 										transitions={'true': 'pregraspbin2', 'false': 'failed'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame4'})
+										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame2'})
 
 			# x:467 y:59
 			OperatableStateMachine.add('bin5',
 										EqualState(),
 										transitions={'true': 'pregraspbin5', 'false': 'bin6'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame1'})
+										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame5'})
 
 			# x:470 y:277
 			OperatableStateMachine.add('bin6',
 										EqualState(),
 										transitions={'true': 'pregraspbin6', 'false': 'failed'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame2'})
+										remapping={'value_a': 'camera_frame', 'value_b': 'camera_frame6'})
 
 			# x:663 y:58
 			OperatableStateMachine.add('pregraspbin5',
