@@ -15,6 +15,9 @@ from ariac_flexbe_states.srdf_state_to_moveit_ariac_state import SrdfStateToMove
 from ariac_flexbe_states.moveit_to_joints_dyn_ariac_state import MoveitToJointsDynAriacState
 from ariac_flexbe_states.detect_part_camera_ariac_state import DetectPartCameraAriacState
 from flexbe_states.wait_state import WaitState
+from ariac_flexbe_states.compute_grasp_ariac_state import ComputeGraspAriacState
+from ariac_flexbe_states.vacuum_gripper_control_state import VacuumGripperControlState
+from ariac_support_flexbe_states.replace_state import ReplaceState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -50,14 +53,14 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 
 
 	def create(self):
-		# x:1770 y:298, x:103 y:321
+		# x:1770 y:298, x:81 y:372
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['part_type', 'agv_id', 'pose_on_agv', 'camera_ref_frame', 'camera_frame'], output_keys=['part_type', 'camera_ref_frame', 'camera_frame'])
 		_state_machine.userdata.part_type = ''
 		_state_machine.userdata.agv_id = ''
 		_state_machine.userdata.move_group_prefix1 = '/ariac/arm1'
 		_state_machine.userdata.move_group_prefix2 = '/ariac/arm2'
 		_state_machine.userdata.move_group = 'manipulator'
-		_state_machine.userdata.tool_link = ee_link
+		_state_machine.userdata.tool_link = 'ee_link'
 		_state_machine.userdata.part_pose = []
 		_state_machine.userdata.joint_values = []
 		_state_machine.userdata.action_topic = '/move_group'
@@ -76,6 +79,10 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 		_state_machine.userdata.camera_frame1 = 'logical_camera_1_frame'
 		_state_machine.userdata.config_name_bin6PreGrasp = 'bin6PreGrasp'
 		_state_machine.userdata.joint_names = ''
+		_state_machine.userdata.part_rotation = 0
+		_state_machine.userdata.arm_id = 'arm1'
+		_state_machine.userdata.gripper1 = 'arm1'
+		_state_machine.userdata.gripper2 = 'arm2'
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -154,21 +161,21 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off, 'param_error': Autonomy.Off},
 										remapping={'config_name': 'config_name_bin5PreGrasp', 'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix1', 'action_topic': 'action_topic', 'robot_name': 'robot_name', 'config_name_out': 'config_name_out', 'move_group_out': 'move_group_out', 'robot_name_out': 'robot_name_out', 'action_topic_out': 'action_topic_out', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
-			# x:709 y:272
+			# x:652 y:273
 			OperatableStateMachine.add('pregraspbin6',
 										SrdfStateToMoveitAriac(),
 										transitions={'reached': 'detectpartbin6', 'planning_failed': 'failed', 'control_failed': 'detectpartbin6', 'param_error': 'failed'},
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off, 'param_error': Autonomy.Off},
 										remapping={'config_name': 'config_name_bin6PreGrasp', 'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix1', 'action_topic': 'action_topic', 'robot_name': 'robot_name', 'config_name_out': 'config_name_out', 'move_group_out': 'move_group_out', 'robot_name_out': 'robot_name_out', 'action_topic_out': 'action_topic_out', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
-			# x:708 y:350
+			# x:653 y:351
 			OperatableStateMachine.add('pregraspbin1',
 										SrdfStateToMoveitAriac(),
 										transitions={'reached': 'detectpartbin1', 'planning_failed': 'failed', 'control_failed': 'detectpartbin1', 'param_error': 'failed'},
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off, 'param_error': Autonomy.Off},
 										remapping={'config_name': 'config_name_bin1PreGrasp', 'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix2', 'action_topic': 'action_topic', 'robot_name': 'robot_name', 'config_name_out': 'config_name_out', 'move_group_out': 'move_group_out', 'robot_name_out': 'robot_name_out', 'action_topic_out': 'action_topic_out', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
-			# x:713 y:531
+			# x:657 y:531
 			OperatableStateMachine.add('pregraspbin2',
 										SrdfStateToMoveitAriac(),
 										transitions={'reached': 'detectpartbin2', 'planning_failed': 'failed', 'control_failed': 'detectpartbin2', 'param_error': 'failed'},
@@ -178,28 +185,28 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 			# x:1164 y:44
 			OperatableStateMachine.add('pickbin5',
 										MoveitToJointsDynAriacState(),
-										transitions={'reached': 'pregraspbin5_2', 'planning_failed': 'Retry', 'control_failed': 'pregraspbin5_2'},
+										transitions={'reached': 'gripperkeuze', 'planning_failed': 'failed', 'control_failed': 'Retry'},
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off},
 										remapping={'move_group_prefix': 'move_group_prefix1', 'move_group': 'move_group', 'action_topic': 'action_topic', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
 			# x:1173 y:269
 			OperatableStateMachine.add('pickbin6',
 										MoveitToJointsDynAriacState(),
-										transitions={'reached': 'pregraspbin6_2', 'planning_failed': 'failed', 'control_failed': 'pregraspbin6_2'},
+										transitions={'reached': 'Gripperaan_2', 'planning_failed': 'failed', 'control_failed': 'Retry_2'},
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off},
 										remapping={'move_group_prefix': 'move_group_prefix1', 'move_group': 'move_group', 'action_topic': 'action_topic', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
 			# x:1171 y:353
 			OperatableStateMachine.add('pickbin1',
 										MoveitToJointsDynAriacState(),
-										transitions={'reached': 'pregraspbin1_2', 'planning_failed': 'failed', 'control_failed': 'pregraspbin1_2'},
+										transitions={'reached': 'Gripperaan_4', 'planning_failed': 'failed', 'control_failed': 'Retry_3'},
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off},
 										remapping={'move_group_prefix': 'move_group_prefix2', 'move_group': 'move_group', 'action_topic': 'action_topic', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
 			# x:1185 y:524
 			OperatableStateMachine.add('pickbin2',
 										MoveitToJointsDynAriacState(),
-										transitions={'reached': 'pregraspbin2_2', 'planning_failed': 'failed', 'control_failed': 'pregraspbin2_2'},
+										transitions={'reached': 'Gripperaan_3', 'planning_failed': 'failed', 'control_failed': 'Retry_4'},
 										autonomy={'reached': Autonomy.Off, 'planning_failed': Autonomy.Off, 'control_failed': Autonomy.Off},
 										remapping={'move_group_prefix': 'move_group_prefix2', 'move_group': 'move_group', 'action_topic': 'action_topic', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
 
@@ -241,36 +248,138 @@ class transport_part_form_bin_to_agv_stateSM(Behavior):
 			# x:818 y:46
 			OperatableStateMachine.add('detectpartbin5',
 										DetectPartCameraAriacState(time_out=0.5),
-										transitions={'continue': 'pickbin5', 'failed': 'failed', 'not_found': 'failed'},
+										transitions={'continue': 'Computegraspbin5', 'failed': 'failed', 'not_found': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ref_frame': 'camera_ref_frame', 'camera_topic': 'camera_topic', 'camera_frame': 'camera_frame', 'part': 'part_type', 'pose': 'part_pose'})
 
 			# x:1193 y:136
 			OperatableStateMachine.add('Retry',
 										WaitState(wait_time=1),
-										transitions={'done': 'pregraspbin5_2'},
+										transitions={'done': 'gripperkeuze'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:868 y:255
+			# x:820 y:265
 			OperatableStateMachine.add('detectpartbin6',
 										DetectPartCameraAriacState(time_out=0.5),
-										transitions={'continue': 'pickbin6', 'failed': 'failed', 'not_found': 'failed'},
+										transitions={'continue': 'Computegraspbin5_2', 'failed': 'failed', 'not_found': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ref_frame': 'camera_ref_frame', 'camera_topic': 'camera_topic', 'camera_frame': 'camera_frame', 'part': 'part_type', 'pose': 'part_pose'})
 
-			# x:868 y:338
+			# x:820 y:348
 			OperatableStateMachine.add('detectpartbin1',
 										DetectPartCameraAriacState(time_out=0.5),
-										transitions={'continue': 'pickbin1', 'failed': 'failed', 'not_found': 'failed'},
+										transitions={'continue': 'Computegraspbin5_3', 'failed': 'failed', 'not_found': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ref_frame': 'camera_ref_frame', 'camera_topic': 'camera_topic', 'camera_frame': 'camera_frame', 'part': 'part_type', 'pose': 'part_pose'})
 
-			# x:879 y:520
+			# x:833 y:530
 			OperatableStateMachine.add('detectpartbin2',
 										DetectPartCameraAriacState(time_out=0.5),
-										transitions={'continue': 'pickbin2', 'failed': 'failed', 'not_found': 'failed'},
+										transitions={'continue': 'Computegraspbin5_4', 'failed': 'failed', 'not_found': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ref_frame': 'camera_ref_frame', 'camera_topic': 'camera_topic', 'camera_frame': 'camera_frame', 'part': 'part_type', 'pose': 'part_pose'})
+
+			# x:997 y:44
+			OperatableStateMachine.add('Computegraspbin5',
+										ComputeGraspAriacState(joint_names=['linear_arm_actuator_joint', 'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']),
+										transitions={'continue': 'Computegraspbin5', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix1', 'tool_link': 'tool_link', 'pose': 'part_pose', 'offset': 'part_offset', 'rotation': 'part_rotation', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
+
+			# x:1382 y:37
+			OperatableStateMachine.add('Gripperaan',
+										VacuumGripperControlState(enable=True),
+										transitions={'continue': 'pregraspbin5_2', 'failed': 'failed', 'invalid_arm_id': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'invalid_arm_id': Autonomy.Off},
+										remapping={'arm_id': 'arm_id'})
+
+			# x:1363 y:129
+			OperatableStateMachine.add('gripperkeuze',
+										ReplaceState(),
+										transitions={'done': 'Gripperaan'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'value': 'gripper1', 'result': 'arm_id'})
+
+			# x:1000 y:254
+			OperatableStateMachine.add('Computegraspbin5_2',
+										ComputeGraspAriacState(joint_names=['linear_arm_actuator_joint', 'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']),
+										transitions={'continue': 'Computegraspbin5_2', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix1', 'tool_link': 'tool_link', 'pose': 'part_pose', 'offset': 'part_offset', 'rotation': 'part_rotation', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
+
+			# x:1003 y:346
+			OperatableStateMachine.add('Computegraspbin5_3',
+										ComputeGraspAriacState(joint_names=['linear_arm_actuator_joint', 'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']),
+										transitions={'continue': 'Computegraspbin5_3', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix1', 'tool_link': 'tool_link', 'pose': 'part_pose', 'offset': 'part_offset', 'rotation': 'part_rotation', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
+
+			# x:1023 y:524
+			OperatableStateMachine.add('Computegraspbin5_4',
+										ComputeGraspAriacState(joint_names=['linear_arm_actuator_joint', 'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']),
+										transitions={'continue': 'Computegraspbin5_4', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'move_group': 'move_group', 'move_group_prefix': 'move_group_prefix1', 'tool_link': 'tool_link', 'pose': 'part_pose', 'offset': 'part_offset', 'rotation': 'part_rotation', 'joint_values': 'joint_values', 'joint_names': 'joint_names'})
+
+			# x:1193 y:198
+			OperatableStateMachine.add('Retry_2',
+										WaitState(wait_time=1),
+										transitions={'done': 'gripperkeuze_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:1206 y:434
+			OperatableStateMachine.add('Retry_3',
+										WaitState(wait_time=1),
+										transitions={'done': 'gripperkeuze_3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:1200 y:628
+			OperatableStateMachine.add('Retry_4',
+										WaitState(wait_time=1),
+										transitions={'done': 'gripperkeuze_4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:1362 y:199
+			OperatableStateMachine.add('gripperkeuze_2',
+										ReplaceState(),
+										transitions={'done': 'Gripperaan_2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'value': 'gripper1', 'result': 'arm_id'})
+
+			# x:1359 y:426
+			OperatableStateMachine.add('gripperkeuze_3',
+										ReplaceState(),
+										transitions={'done': 'Gripperaan_4'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'value': 'gripper2', 'result': 'arm_id'})
+
+			# x:1357 y:642
+			OperatableStateMachine.add('gripperkeuze_4',
+										ReplaceState(),
+										transitions={'done': 'Gripperaan_3'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'value': 'gripper2', 'result': 'arm_id'})
+
+			# x:1359 y:261
+			OperatableStateMachine.add('Gripperaan_2',
+										VacuumGripperControlState(enable=True),
+										transitions={'continue': 'pregraspbin6_2', 'failed': 'failed', 'invalid_arm_id': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'invalid_arm_id': Autonomy.Off},
+										remapping={'arm_id': 'arm_id'})
+
+			# x:1377 y:511
+			OperatableStateMachine.add('Gripperaan_3',
+										VacuumGripperControlState(enable=True),
+										transitions={'continue': 'pregraspbin2_2', 'failed': 'failed', 'invalid_arm_id': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'invalid_arm_id': Autonomy.Off},
+										remapping={'arm_id': 'arm_id'})
+
+			# x:1362 y:345
+			OperatableStateMachine.add('Gripperaan_4',
+										VacuumGripperControlState(enable=True),
+										transitions={'continue': 'pregraspbin1_2', 'failed': 'failed', 'invalid_arm_id': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off, 'invalid_arm_id': Autonomy.Off},
+										remapping={'arm_id': 'arm_id'})
 
 
 		return _state_machine

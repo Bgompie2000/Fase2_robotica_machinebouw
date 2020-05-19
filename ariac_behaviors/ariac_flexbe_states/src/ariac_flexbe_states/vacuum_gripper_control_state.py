@@ -40,10 +40,10 @@ class VacuumGripperControlState(EventState):
 
 		if userdata.arm_id == 'arm1':
 			gripper_service = '/ariac/arm1/gripper/control'
-		else
+		else:
 			if userdata.arm_id == 'arm2':
 				gripper_service = '/ariac/arm2/gripper/control'
-			else
+			else:
 				return 'invalid_arm_id' 
 
 
@@ -65,7 +65,7 @@ class VacuumGripperControlState(EventState):
 			# Return the response to the calling function.
 			if service_response.success == True:
 				return 'continue'
-			else
+			else:
 				return 'failed'
 
 	    	except rospy.ServiceException, e:

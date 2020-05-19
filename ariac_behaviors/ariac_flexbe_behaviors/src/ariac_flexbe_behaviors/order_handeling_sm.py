@@ -67,6 +67,7 @@ class order_handelingSM(Behavior):
 		_state_machine.userdata.pose_on_agv = []
 		_state_machine.userdata.camera_ref_frame = ''
 		_state_machine.userdata.camera_frame = ''
+		_state_machine.userdata.tool_link = 'ee_link'
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]

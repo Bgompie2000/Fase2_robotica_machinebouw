@@ -71,6 +71,7 @@ class binSelectieSM(Behavior):
 		_state_machine.userdata.offset2 = 0
 		_state_machine.userdata.offset3 = 0
 		_state_machine.userdata.offset4 = 0
+		_state_machine.userdata.tool_link = 'ee_link'
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
